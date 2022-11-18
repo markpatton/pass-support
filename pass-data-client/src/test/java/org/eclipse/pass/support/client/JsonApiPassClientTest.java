@@ -1,23 +1,27 @@
 package org.eclipse.pass.support.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.eclipse.pass.support.client.JsonApiPassClient;
-import org.eclipse.pass.support.client.PassClient;
 import org.eclipse.pass.support.client.adapter.ZonedDateTimeAdapter;
+import org.eclipse.pass.support.client.model.AggregatedDepositStatus;
 import org.eclipse.pass.support.client.model.Funder;
 import org.eclipse.pass.support.client.model.Grant;
 import org.eclipse.pass.support.client.model.Publication;
+import org.eclipse.pass.support.client.model.Source;
+import org.eclipse.pass.support.client.model.Submission;
+import org.eclipse.pass.support.client.model.SubmissionStatus;
 import org.eclipse.pass.support.client.model.User;
 import org.eclipse.pass.support.client.model.UserRole;
-import org.eclipse.pass.support.client.model.support.TestValues;
 import org.junit.jupiter.api.Test;
 
 public class JsonApiPassClientTest {
@@ -33,18 +37,29 @@ public class JsonApiPassClientTest {
 
         assertNotNull(pub.getId());
 
-        Publication test = client.getObject(Publication.class, pub.getId());
+        Publication test = client.getObject(pub);
 
         assertEquals(pub, test);
     }
 
     @Test
-    public void testCreateObjectWithRelationships() throws IOException {
+    public void testCreateGetObject() throws IOException {
         User pi = new User();
         pi.setDisplayName("Bessie Cow");
         pi.setRoles(Arrays.asList(UserRole.ADMIN));
 
         client.createObject(pi);
+
+        List<User> copis = new ArrayList<>();
+
+        for (String name : Arrays.asList("Jessie Farmhand", "Cassie Farmhand")) {
+            User user = new User();
+            user.setDisplayName(name);
+            user.setRoles(Arrays.asList(UserRole.SUBMITTER));
+
+            client.createObject(user);
+            copis.add(user);
+        }
 
         Funder funder = new Funder();
         funder.setName("Farmer Bob");
@@ -56,43 +71,61 @@ public class JsonApiPassClientTest {
         grant.setAwardNumber("award");
         grant.setLocalKey("localkey");
         grant.setAwardDate(ZonedDateTime.parse("2014-03-28T00:00:00.000Z", ZonedDateTimeAdapter.FORMATTER));
+        grant.setStartDate(ZonedDateTime.parse("2016-01-10T02:12:13.040Z", ZonedDateTimeAdapter.FORMATTER));
         grant.setDirectFunder(funder);
         grant.setPi(pi);
+        grant.setCoPis(copis);
 
         client.createObject(grant);
 
-        Grant test = client.getObject(Grant.class, grant.getId(), "directFunder", "pi");
+        // Get the grant with the relationship target objects included
+        Grant test = client.getObject(grant, "directFunder", "pi", "coPis");
 
-        // grant.setDirectFunder(new Funder(funder.getId()));
-        // grant.setPi(new User(pi.getId()));
+        assertEquals(grant, test);
 
-        assertEquals(grant.getId(), test.getId());
-        assertEquals(grant.getAwardNumber(), test.getAwardNumber());
 
-        // System.err.println(grant.getAwardDate());
-        // System.err.println(test.getAwardDate());
+        // Get the grant without the relationship target objects included
+        test = client.getObject(grant);
 
-        // TODO Switch equals method to doing instant comparison
-
-        assertEquals(grant.getAwardDate().toInstant(), test.getAwardDate().toInstant());
-
-        assertEquals(grant.getDirectFunder().getId(), test.getDirectFunder().getId());
-        assertEquals(grant.getDirectFunder().getLocalKey(), test.getDirectFunder().getLocalKey());
-        assertEquals(grant.getDirectFunder().getUrl(), test.getDirectFunder().getUrl());
-
-        assertEquals(grant.getDirectFunder().getName(), test.getDirectFunder().getName());
-        assertEquals(grant.getDirectFunder().getPolicy(), test.getDirectFunder().getPolicy());
-
-        assertEquals(grant.getDirectFunder(), test.getDirectFunder());
-
-        assertEquals(grant.getPi(), test.getPi());
+        // Relationship targets should just have id, no other attributes
+        grant.setDirectFunder(new Funder(funder.getId()));
+        grant.setPi(new User(pi.getId()));
+        grant.setCoPis(copis.stream().map(u -> new User(u.getId())).collect(Collectors.toList()));
 
         assertEquals(grant, test);
     }
 
     @Test
+    public void testUpdateObject() throws IOException {
+
+        Publication pub = new Publication();
+        pub.setTitle("Ten puns");
+
+        client.createObject(pub);
+
+        Submission sub = new Submission();
+
+        sub.setAggregatedDepositStatus(AggregatedDepositStatus.NOT_STARTED);
+        sub.setSource(Source.PASS);
+        sub.setPublication(pub);
+        sub.setSubmitterName("Name");
+        sub.setSubmitted(false);
+
+        client.createObject(sub);
+
+        assertEquals(sub, client.getObject(sub, "publication"));
+    }
+
+    @Test
+    public void testCreateGetObjectWithoutIncludedRelationships() throws IOException {
+
+    }
+
+    @Test
     public void testSelectObjects() throws IOException {
         String pmid = "" + UUID.randomUUID();
+
+        List<Publication> pubs = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
             Publication pub = new Publication();
@@ -102,18 +135,25 @@ public class JsonApiPassClientTest {
             pub.setPmid(pmid);
 
             client.createObject(pub);
+            pubs.add(pub);
         }
 
         String filter = RSQL.equals("pmid", pmid);
         PassClientSelector<Publication> selector = new PassClientSelector<>(Publication.class, 0, 100, filter, "id");
         PassClientResult<Publication> result = client.selectObjects(selector);
 
-        assertEquals(10, result.getTotal());
-        assertEquals(10, result.getObjects().size());
+        assertEquals(pubs.size(), result.getTotal());
+        assertIterableEquals(pubs, result.getObjects());
 
-        result.getObjects().forEach(p -> {
-            assertNotNull(p.getId());
-            assertTrue(p.getTitle().startsWith("Title"));
-        });
+        // Test selecting with an offset
+        selector = new PassClientSelector<>(Publication.class, 5, 100, filter, "id");
+        result = client.selectObjects(selector);
+
+        assertEquals(pubs.size(), result.getTotal());
+        assertIterableEquals(pubs.subList(5, pubs.size()), result.getObjects());
+
+        // Test using a stream which will make multiple calls
+        selector = new PassClientSelector<>(Publication.class, 0, 2, filter, "id");
+        assertIterableEquals(pubs, client.streamObjects(selector).collect(Collectors.toList()));
     }
 }
