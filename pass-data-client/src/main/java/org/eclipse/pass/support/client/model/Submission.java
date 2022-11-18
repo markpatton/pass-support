@@ -131,6 +131,15 @@ public class Submission implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Submission(String id) {
+        this.id = id;
+    }
+
+    /**
      * Copy constructor, this will copy the values of the object provided into the new object
      *
      * @param submission the submission to copy

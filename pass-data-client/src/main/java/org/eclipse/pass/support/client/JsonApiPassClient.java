@@ -2,12 +2,20 @@ package org.eclipse.pass.support.client;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.pass.support.client.adapter.AggregatedDepositStatusAdapter;
+import org.eclipse.pass.support.client.adapter.AwardStatusAdapter;
+import org.eclipse.pass.support.client.adapter.ContributorRoleAdapter;
+import org.eclipse.pass.support.client.adapter.CopyStatusAdapter;
+import org.eclipse.pass.support.client.adapter.DepositStatusAdapter;
+import org.eclipse.pass.support.client.adapter.SourceAdapter;
+import org.eclipse.pass.support.client.adapter.SubmissionStatusAdapter;
 import org.eclipse.pass.support.client.adapter.UriAdapter;
 import org.eclipse.pass.support.client.adapter.UserRoleAdapter;
 import org.eclipse.pass.support.client.adapter.ZonedDateTimeAdapter;
@@ -37,7 +45,6 @@ import com.squareup.moshi.Types;
 import jsonapi.Document;
 import jsonapi.Document.IncludedSerialization;
 import jsonapi.JsonApiFactory;
-import jsonapi.ResourceObject;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -62,8 +69,10 @@ public class JsonApiPassClient implements PassClient {
                 Funder.class, Grant.class, Journal.class, Policy.class, Publication.class, Publisher.class,
                 Repository.class, RepositoryCopy.class, Submission.class, SubmissionEvent.class, User.class).build();
 
-        this.moshi = new Moshi.Builder().add(factory).add(new ZonedDateTimeAdapter()).add(new UriAdapter())
-                .add(new UserRoleAdapter()).build();
+        this.moshi = new Moshi.Builder().add(factory).add(new AggregatedDepositStatusAdapter())
+                .add(new AwardStatusAdapter()).add(new ContributorRoleAdapter()).add(new CopyStatusAdapter())
+                .add(new DepositStatusAdapter()).add(new SourceAdapter()).add(new SubmissionStatusAdapter())
+                .add(new ZonedDateTimeAdapter()).add(new UriAdapter()).add(new UserRoleAdapter()).build();
     }
 
     private String get_url(PassEntity obj) {
@@ -85,6 +94,13 @@ public class JsonApiPassClient implements PassClient {
 
         char[] chars = name.toCharArray();
         chars[0] = Character.toLowerCase(chars[0]);
+
+        return new String(chars);
+    }
+
+    private String get_java_type(String json_type) {
+        char[] chars = json_type.toCharArray();
+        chars[0] = Character.toUpperCase(chars[0]);
 
         return new String(chars);
     }
@@ -137,71 +153,77 @@ public class JsonApiPassClient implements PassClient {
         }
     }
 
-    private static class Target {
-        List<String> ids;
-        String type;
-        boolean many;
+    private static class Relationship {
+        String name;
+        List<String> targets;
+        String target_type;
+        boolean to_many;
 
-        Target() {
-            this.ids = new ArrayList<>();
+        Relationship(String name) {
+            this.name = name;
+            this.targets = new ArrayList<>();
         }
     }
 
-    private Map<String, Target> get_relationships(String json) throws IOException {
-        Map<String, Target> result = new HashMap<>();
+    // Return map source object id to object relationships
+    // Ignore any relationships whose target is included
+    private Map<String, List<Relationship>> get_relationships(String json_api_doc) throws IOException {
+        Map<String, List<Relationship>> result = new HashMap<>();
 
-        try (Buffer buffer = new Buffer(); JsonReader reader = JsonReader.of(buffer.writeUtf8(json))) {
+        // Contains type_id for objects which are included in the document
+        Set<String> included = new HashSet<>();
+
+        try (Buffer buffer = new Buffer(); JsonReader reader = JsonReader.of(buffer.writeUtf8(json_api_doc))) {
             reader.beginObject();
 
             while (reader.hasNext()) {
-                if (reader.nextName().equals("data")) {
-                    reader.beginObject();
+                String top_name = reader.nextName();
+
+                if (top_name.equals("data")) {
+                    Token next = reader.peek();
+
+                    if (next == Token.BEGIN_ARRAY) {
+                        reader.beginArray();
+                        while (reader.hasNext()) {
+                            gather_relationships_from_data(result, reader, included);
+                        }
+                        reader.endArray();
+                    } else if (next == Token.BEGIN_OBJECT) {
+                        gather_relationships_from_data(result, reader, included);
+                    } else {
+                        reader.skipValue();
+                    }
+                } else if (top_name.equals("included")) {
+                    reader.beginArray();
+
                     while (reader.hasNext()) {
-                        if (reader.nextName().equals("relationships")) {
-                            reader.beginObject();
+                        String id = null;
+                        String type = null;
 
-                            while (reader.hasNext()) {
-                                String rel_name = reader.nextName();
+                        reader.beginObject();
+                        while (reader.hasNext()) {
+                            switch (reader.nextName()) {
+                            case "id":
+                                id = reader.nextString();
+                                break;
 
-                                reader.beginObject();
-                                while (reader.hasNext()) {
-                                    if (reader.nextName().equals("data")) {
-                                        Token next = reader.peek();
+                            case "type":
+                                type = reader.nextString();
+                                break;
 
-                                        Target target = new Target();
-
-                                        if (next == Token.BEGIN_ARRAY) {
-                                            reader.beginArray();
-                                            target.many = true;
-
-                                            while (reader.hasNext()) {
-                                                fill_target(target, reader);
-                                            }
-
-                                            reader.endArray();
-                                        } else if (next == Token.BEGIN_OBJECT) {
-                                            target.many = false;
-                                            fill_target(target, reader);
-                                        } else {
-                                            reader.skipValue();
-                                        }
-
-                                        if (target.ids.size() > 0) {
-                                            result.put(rel_name, target);
-                                        }
-                                    } else {
-                                        reader.skipValue();
-                                    }
-                                }
-                                reader.endObject();
+                            default:
+                                reader.skipValue();
+                                break;
                             }
+                        }
+                        reader.endObject();
 
-                            reader.endObject();
-                        } else {
-                            reader.skipValue();
+                        if (id != null && type != null) {
+                            included.add(type + "_" + id);
                         }
                     }
-                    reader.endObject();
+
+                    reader.endArray();
                 } else {
                     reader.skipValue();
                 }
@@ -210,10 +232,85 @@ public class JsonApiPassClient implements PassClient {
             reader.endObject();
         }
 
+        // Prune relationships whose target object is included
+        if (included.size() > 0) {
+            result.forEach((id, rels) -> {
+                rels.forEach(rel -> {
+                    rel.targets.removeIf(i -> included.contains(rel.target_type + "_" + i));
+                });
+            });
+        }
+
         return result;
     }
 
-    private void fill_target(Target target, JsonReader reader) throws IOException {
+    private void gather_relationships_from_data(Map<String, List<Relationship>> result, JsonReader reader, Set<String> included) throws IOException {
+        String id = null;
+        List<Relationship> rels = null;
+
+        reader.beginObject();
+        while (reader.hasNext()) {
+            String name = reader.nextName();
+
+            if (name.equals("relationships")) {
+                rels = parse_relationships(reader, included);
+            } else if (name.equals("id")) {
+                id = reader.nextString();
+            } else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+
+        if (id != null && rels != null && rels.size() > 0) {
+            result.put(id, rels);
+        }
+    }
+
+    // Parse the relationships object
+    private List<Relationship> parse_relationships(JsonReader reader, Set<String> included) throws IOException {
+        List<Relationship> result = new ArrayList<>();
+
+        reader.beginObject();
+        while (reader.hasNext()) {
+            Relationship rel = new Relationship(reader.nextName());
+
+            reader.beginObject();
+            while (reader.hasNext()) {
+                if (reader.nextName().equals("data")) {
+                    Token next = reader.peek();
+
+                    if (next == Token.BEGIN_ARRAY) {
+                        reader.beginArray();
+                        rel.to_many = true;
+
+                        while (reader.hasNext()) {
+                            fill_relationship(rel, reader);
+                        }
+
+                        reader.endArray();
+                    } else if (next == Token.BEGIN_OBJECT) {
+                        rel.to_many = false;
+                        fill_relationship(rel, reader);
+                    } else {
+                        reader.skipValue();
+                    }
+
+                    if (rel.targets.size() > 0) {
+                        result.add(rel);
+                    }
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endObject();
+        }
+        reader.endObject();
+
+        return result;
+    }
+
+    private void fill_relationship(Relationship rel, JsonReader reader) throws IOException {
         reader.beginObject();
 
         String id = null;
@@ -231,36 +328,71 @@ public class JsonApiPassClient implements PassClient {
 
             default:
                 reader.skipValue();
+                break;
             }
         }
 
         if (id != null && type != null) {
-            target.ids.add(id);
-            target.type = type;
+            rel.targets.add(id);
+            rel.target_type = type;
         }
 
         reader.endObject();
     }
 
-    private void set_relationship(Object obj, String name, Target target) throws IOException {
+    private Object create_target(String target_id, String class_name) {
         try {
-            Object target_obj = Class.forName(target.type).getConstructor(String.class).newInstance("");
-
-            Method m = obj.getClass().getMethod("set" + name, target_obj.getClass());
-            m.invoke(obj, target_obj);
-
+            return Class.forName(class_name).getConstructor(String.class).newInstance(target_id);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-            throw new IOException(e);
+            throw new RuntimeException("Failed to create: " + class_name, e);
         }
     }
 
-    private void setRelationship(Object obj, String name, List<Target> targets) {
+    private void set_value(Object obj, String set_method, Object value) {
+        try {
+            Class<?> value_class = value.getClass();
+            if (value instanceof List) {
+                value_class = List.class;
+            }
 
-        // Method m = obj.getClass().getMethod("setId");
+            obj.getClass().getMethod(set_method, value_class).invoke(obj, value);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException e) {
+            throw new RuntimeException("Failed to invoke: " + set_method, e);
+        }
+    }
 
-        // Class.forName("").getConstructor(null).newInstance(null);
+    private void set_relationship(Object obj, Relationship rel) {
+        // Targets may have been pruned
+        if (rel.targets.size() == 0) {
+            return;
+        }
 
+        System.err.println("Moo " + rel.name);
+
+        String target_class_name = "org.eclipse.pass.support.client.model." + get_java_type(rel.target_type);
+        Object target;
+
+        if (rel.to_many) {
+            List<Object> list = new ArrayList<>();
+            rel.targets.forEach(id -> {
+                list.add(create_target(id, target_class_name));
+            });
+            target = list;
+        } else {
+            target = create_target(rel.targets.get(0), target_class_name);
+        }
+
+        set_value(obj, "set" + get_java_type(rel.name), target);
+    }
+
+    private void set_relationships(Object obj, List<Relationship> rels) {
+        if (rels != null) {
+            rels.forEach(rel -> {
+                set_relationship(obj, rel);
+            });
+        }
     }
 
     @Override
@@ -293,17 +425,7 @@ public class JsonApiPassClient implements PassClient {
         Document<T> doc = adapter.fromJson(body);
         T result = doc.requireData();
 
-        Map<String, Target> rels = get_relationships(body);
-
-
-        rels.forEach((rel_name, rel_target) -> {
-            System.err.println(rel_name);
-            System.err.println(rel_target.type);
-            System.err.println(rel_target.many);
-        });
-        System.err.println("Moo");
-
-
+        set_relationships(result, get_relationships(body).get(id));
 
         return result;
     }
@@ -373,6 +495,14 @@ public class JsonApiPassClient implements PassClient {
             if (page.containsKey("totalRecords")) {
                 total = ((Double) page.get("totalRecords")).longValue();
             }
+        }
+
+        if (include == null || include.length == 0) {
+            Map<String, List<Relationship>> rels = get_relationships(body);
+
+            matches.forEach(o -> {
+                set_relationships(o, rels.get(o.getId()));
+            });
         }
 
         return new PassClientResult<>(matches, total);

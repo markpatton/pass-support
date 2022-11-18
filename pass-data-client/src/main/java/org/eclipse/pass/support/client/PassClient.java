@@ -48,16 +48,27 @@ interface PassClient {
     <T extends PassEntity> void updateObject(T obj) throws IOException;
 
     /**
-     * Retrieve an object from the repository.
+     * Retrieve object with the given type and id from the repository.
      *
      * @param <T>
      * @param type
      * @param id
-     * @return Persisted object or null
+     * @return Persisted object or null if it does not exist
      * @throws IOException
      */
     <T extends PassEntity> T getObject(Class<T> type, String id, String... include) throws IOException;
 
+
+    /**
+     * Retrieve object with the type of
+     *
+     * @param <T>
+     * @param obj
+     * @param include
+     * @return Persisted object or null if it does not exist
+     * @throws IOException
+     */
+    @SuppressWarnings("unchecked")
     default <T extends PassEntity> T getObject(T obj, String... include) throws IOException {
         return (T) getObject(obj.getClass(), obj.getId(), include);
     }

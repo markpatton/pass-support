@@ -72,6 +72,15 @@ public class RepositoryCopy implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public RepositoryCopy(String id) {
+        this.id = id;
+    }
+
+    /**
      * Copy constructor, this will copy the values of the object provided into the new object
      *
      * @param repositoryCopy the repositoryCopy to copy
