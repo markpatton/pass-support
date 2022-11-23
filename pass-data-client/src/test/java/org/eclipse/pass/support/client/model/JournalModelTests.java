@@ -23,50 +23,33 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.pass.support.client.model.Journal;
-import org.eclipse.pass.support.client.model.PmcParticipation;
 import org.eclipse.pass.support.client.model.support.TestValues;
 import org.junit.jupiter.api.Test;
 
 /**
- * Model has been annotated with JSON tags. These tests do a simple check to ensure the
- * Jackson integration is functional and the equals / hashcode functions work
+ * These tests do a simple check to ensure the the equals / hashcode functions work.
  *
  * @author Karen Hanson
  * @author Jim Martino
  */
 public class JournalModelTests {
-
-    /**
-     * Creates two identical Journals and checks the equals and hashcodes match.
-     * Modifies one field on one of the journals and verifies they no longer are
-     * equal or have matching hashcodes.
-     *
-     * @throws Exception
-     */
     @Test
-    public void testJournalEqualsAndHashCode() throws Exception {
-
+    public void testJournalEqualsAndHashCode()  {
         Journal journal1 = createJournal(TestValues.JOURNAL_ID_1);
         Journal journal2 = createJournal(TestValues.JOURNAL_ID_1);
 
         assertEquals(journal1, journal2);
-        journal1.setJournalName("different");
-        assertTrue(!journal1.equals(journal2));
-
-        assertTrue(journal1.hashCode() != journal2.hashCode());
-        journal1 = journal2;
         assertEquals(journal1.hashCode(), journal2.hashCode());
 
+        journal1.setJournalName("different");
+        assertTrue(!journal1.equals(journal2));
     }
 
     /**
      * Test copy constructor creates a valid duplicate that is not the same object
-     *
-     * @throws Exception
      */
     @Test
-    public void testJournalCopyConstructor() throws Exception {
+    public void testJournalCopyConstructor()  {
         Journal journal = createJournal(TestValues.JOURNAL_ID_1);
         List<String> issnsOrig = new ArrayList<String>(
             Arrays.asList(TestValues.JOURNAL_ISSN_1, TestValues.JOURNAL_ISSN_2));
@@ -84,5 +67,4 @@ public class JournalModelTests {
         assertEquals(issnsOrig, journal.getIssns());
         assertEquals(issnsNew, journalCopy.getIssns());
     }
-
 }

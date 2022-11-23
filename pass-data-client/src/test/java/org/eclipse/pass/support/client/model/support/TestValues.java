@@ -49,7 +49,7 @@ public class TestValues {
     /**
      * A test value
      */
-    public static final String  FILE_ID_1 = "4";
+    public static final String FILE_ID_1 = "4";
 
     /**
      * A test value
@@ -84,7 +84,7 @@ public class TestValues {
     /**
      * A test value
      */
-    public static final String INSTITUTION_ID_1 =  "https://example.org/fedora/institutions/1";
+    public static final String INSTITUTION_ID_1 = "https://example.org/fedora/institutions/1";
 
     /**
      * A test value
@@ -495,9 +495,12 @@ public class TestValues {
     /**
      * A test value
      */
-    public static final Set<String> USER_AFFILIATION = new HashSet<String>() {{
+    @SuppressWarnings("serial")
+    public static final Set<String> USER_AFFILIATION = new HashSet<String>() {
+        {
             add("Johns Hopkins University");
-        }};
+        }
+    };
 
     /**
      * A test value

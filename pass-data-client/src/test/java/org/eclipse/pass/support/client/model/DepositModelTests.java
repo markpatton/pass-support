@@ -19,51 +19,34 @@ import static org.eclipse.pass.support.client.model.support.TestObjectCreator.cr
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.eclipse.pass.support.client.model.Deposit;
-import org.eclipse.pass.support.client.model.DepositStatus;
 import org.eclipse.pass.support.client.model.support.TestValues;
 import org.junit.jupiter.api.Test;
 
 /**
- * Model has been annotated with JSON tags. These tests do a simple check to ensure the
- * Jackson integration is functional and the equals / hashcode functions work
+ * These tests do a simple check to ensure that the equals / hashcode functions work.
  *
  * @author Karen Hanson
  * @author Jim Martino
  */
 public class DepositModelTests {
-
-
-    /**
-     * Creates two identical Deposits and checks the equals and hashcodes match.
-     * Modifies one field on one of the deposits and verifies they no longer are
-     * equal or have matching hashcodes.
-     *
-     * @throws Exception
-     */
     @Test
-    public void testDepositEqualsAndHashCode() throws Exception {
+    public void testDepositEqualsAndHashCode()  {
 
         Deposit deposit1 = createDeposit(TestValues.DEPOSIT_ID_1);
         Deposit deposit2 = createDeposit(TestValues.DEPOSIT_ID_1);
 
         assertEquals(deposit1, deposit2);
-        deposit1.setDepositStatusRef("different");
-        assertTrue(!deposit1.equals(deposit2));
-
-        assertTrue(deposit1.hashCode() != deposit2.hashCode());
-        deposit1 = deposit2;
         assertEquals(deposit1.hashCode(), deposit2.hashCode());
 
+        deposit1.setDepositStatusRef("different");
+        assertTrue(!deposit1.equals(deposit2));
     }
 
     /**
      * Test copy constructor creates a valid duplicate that is not the same object
-     *
-     * @throws Exception
      */
     @Test
-    public void testDepositCopyConstructor() throws Exception {
+    public void testDepositCopyConstructor()  {
         Deposit deposit = createDeposit(TestValues.DEPOSIT_ID_1);
         Deposit depositCopy = new Deposit(deposit);
         assertEquals(deposit, depositCopy);
@@ -76,5 +59,4 @@ public class DepositModelTests {
         assertEquals(TestValues.DEPOSIT_ID_1, deposit.getId());
         assertEquals(TestValues.DEPOSIT_ID_2, depositCopy.getId());
     }
-
 }
