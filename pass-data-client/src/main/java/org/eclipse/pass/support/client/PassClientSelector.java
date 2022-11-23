@@ -104,7 +104,7 @@ public class PassClientSelector<T extends PassEntity> {
         return include;
     }
 
-    public void setInclude(String[] include) {
+    public void setInclude(String... include) {
         this.include = include;
     }
 }

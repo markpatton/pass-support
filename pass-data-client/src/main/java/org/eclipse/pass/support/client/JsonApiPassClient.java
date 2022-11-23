@@ -14,6 +14,10 @@ import org.eclipse.pass.support.client.adapter.AwardStatusAdapter;
 import org.eclipse.pass.support.client.adapter.ContributorRoleAdapter;
 import org.eclipse.pass.support.client.adapter.CopyStatusAdapter;
 import org.eclipse.pass.support.client.adapter.DepositStatusAdapter;
+import org.eclipse.pass.support.client.adapter.EventTypeAdapter;
+import org.eclipse.pass.support.client.adapter.FileRoleAdapter;
+import org.eclipse.pass.support.client.adapter.IntegrationTypeAdapter;
+import org.eclipse.pass.support.client.adapter.PerformerRoleAdapter;
 import org.eclipse.pass.support.client.adapter.SourceAdapter;
 import org.eclipse.pass.support.client.adapter.SubmissionStatusAdapter;
 import org.eclipse.pass.support.client.adapter.UriAdapter;
@@ -71,8 +75,10 @@ public class JsonApiPassClient implements PassClient {
 
         this.moshi = new Moshi.Builder().add(factory).add(new AggregatedDepositStatusAdapter())
                 .add(new AwardStatusAdapter()).add(new ContributorRoleAdapter()).add(new CopyStatusAdapter())
-                .add(new DepositStatusAdapter()).add(new SourceAdapter()).add(new SubmissionStatusAdapter())
-                .add(new ZonedDateTimeAdapter()).add(new UriAdapter()).add(new UserRoleAdapter()).build();
+                .add(new DepositStatusAdapter()).add(new EventTypeAdapter()).add(new FileRoleAdapter())
+                .add(new IntegrationTypeAdapter()).add(new PerformerRoleAdapter()).add(new SourceAdapter())
+                .add(new SubmissionStatusAdapter()).add(new ZonedDateTimeAdapter()).add(new UriAdapter())
+                .add(new UserRoleAdapter()).build();
     }
 
     private String get_url(PassEntity obj) {
@@ -113,8 +119,6 @@ public class JsonApiPassClient implements PassClient {
 
         String json = adapter.toJson(doc);
 
-        System.err.println("POST: " + json);
-
         String url = get_url(obj);
         RequestBody body = RequestBody.create(json, JSON_API_MEDIA_TYPE);
         Request request = new Request.Builder().url(url).header("Accept", JSON_API_CONTENT_TYPE)
@@ -137,8 +141,6 @@ public class JsonApiPassClient implements PassClient {
         Document<T> doc = Document.with(obj).includedSerialization(IncludedSerialization.NONE).build();
 
         String json = adapter.toJson(doc);
-
-        System.err.println("POST: " + json);
 
         String url = get_url(obj);
         RequestBody body = RequestBody.create(json, JSON_API_MEDIA_TYPE);
@@ -244,7 +246,8 @@ public class JsonApiPassClient implements PassClient {
         return result;
     }
 
-    private void gather_relationships_from_data(Map<String, List<Relationship>> result, JsonReader reader, Set<String> included) throws IOException {
+    private void gather_relationships_from_data(Map<String, List<Relationship>> result, JsonReader reader,
+            Set<String> included) throws IOException {
         String id = null;
         List<Relationship> rels = null;
 
@@ -369,8 +372,6 @@ public class JsonApiPassClient implements PassClient {
             return;
         }
 
-        System.err.println("Moo " + rel.name);
-
         String target_class_name = "org.eclipse.pass.support.client.model." + get_java_type(rel.target_type);
         Object target;
 
@@ -415,8 +416,6 @@ public class JsonApiPassClient implements PassClient {
         }
 
         String body = response.body().string();
-
-        System.err.println("GET: " + body);
 
         if (!response.isSuccessful()) {
             throw new IOException("Get failed: " + url + " returned " + response.code() + " " + body);
@@ -478,8 +477,6 @@ public class JsonApiPassClient implements PassClient {
         }
 
         String body = response.body().string();
-
-        System.err.println("GET: " + body);
 
         if (!response.isSuccessful()) {
             throw new IOException("Select failed: " + url + " returned " + response.code() + " " + body);
