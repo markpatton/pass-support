@@ -74,6 +74,15 @@ public class Deposit implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Deposit(String id) {
+        this.id = id;
+    }
+
+    /**
      * Copy constructor, this will copy the values of the object provided into the new object
      *
      * @param deposit the deposit to copy
@@ -183,6 +192,13 @@ public class Deposit implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(depositStatus, depositStatusRef, id, repository, repositoryCopy, submission);
+        return Objects.hash(id, depositStatus, depositStatusRef);
+    }
+
+    @Override
+    public String toString() {
+        return "Deposit [id=" + id + ", depositStatusRef=" + depositStatusRef + ", depositStatus=" + depositStatus
+                + ", submission=" + submission + ", repository=" + repository + ", repositoryCopy=" + repositoryCopy
+                + "]";
     }
 }

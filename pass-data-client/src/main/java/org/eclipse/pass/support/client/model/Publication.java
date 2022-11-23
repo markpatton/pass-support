@@ -78,6 +78,15 @@ public class Publication implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Publication(String id) {
+        this.id = id;
+    }
+
+    /**
      * Copy constructor, this will copy the values of the object provided into the new object
      *
      * @param publication the publication to copy
@@ -218,6 +227,12 @@ public class Publication implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(doi, id, issue, journal, pmid, publicationAbstract, title, volume);
+        return Objects.hash(id, title);
+    }
+
+    @Override
+    public String toString() {
+        return "Publication [id=" + id + ", title=" + title + ", publicationAbstract=" + publicationAbstract + ", doi="
+                + doi + ", pmid=" + pmid + ", journal=" + journal + ", volume=" + volume + ", issue=" + issue + "]";
     }
 }

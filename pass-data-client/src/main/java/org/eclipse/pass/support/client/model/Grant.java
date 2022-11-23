@@ -64,6 +64,7 @@ public class Grant implements PassEntity {
     /**
      * The funder.id of the sponsor that is the original source of the funds
      */
+    @ToOne(name = "primaryFunder")
     private Funder primaryFunder;
 
     /**
@@ -103,6 +104,15 @@ public class Grant implements PassEntity {
      * Grant constructor
      */
     public Grant() {
+    }
+
+    /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Grant(String id) {
+        this.id = id;
     }
 
     /**

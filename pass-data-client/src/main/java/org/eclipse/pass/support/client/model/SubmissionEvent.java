@@ -23,12 +23,13 @@ import jsonapi.Id;
 import jsonapi.Resource;
 
 /**
- * The SubmissionEvent model captures significant events that are performed by an agent and occur against a Submission.
+ * The SubmissionEvent model captures significant events that are performed by
+ * an agent and occur against a Submission.
  *
  * @author Karen Hanson
  */
 
-@Resource(type="submissionEvent")
+@Resource(type = "submissionEvent")
 public class SubmissionEvent implements PassEntity {
     /**
      * Unique id for the resource.
@@ -63,14 +64,16 @@ public class SubmissionEvent implements PassEntity {
     private Submission submission;
 
     /**
-     * A comment relevant to the SubmissionEvent. For example, when a `changes-requested` event occurs,
-     * this might be added by the User through the UI to communicate what changes should be made
+     * A comment relevant to the SubmissionEvent. For example, when a
+     * `changes-requested` event occurs, this might be added by the User through the
+     * UI to communicate what changes should be made
      */
     private String comment;
 
     /**
-     * A resource relevant to the SubmissionEvent. For example, when a `changes-requested` event occurs,
-     * this may contain an Ember application URL to the affected Submission.
+     * A resource relevant to the SubmissionEvent. For example, when a
+     * `changes-requested` event occurs, this may contain an Ember application URL
+     * to the affected Submission.
      */
     private URI link;
 
@@ -81,7 +84,8 @@ public class SubmissionEvent implements PassEntity {
     }
 
     /**
-     * Copy constructor, this will copy the values of the object provided into the new object
+     * Copy constructor, this will copy the values of the object provided into the
+     * new object
      *
      * @param submissionEvent the submissionEvent to copy
      */
@@ -215,8 +219,9 @@ public class SubmissionEvent implements PassEntity {
         SubmissionEvent other = (SubmissionEvent) obj;
         return Objects.equals(comment, other.comment) && eventType == other.eventType && Objects.equals(id, other.id)
                 && Objects.equals(link, other.link) && Objects.equals(performedBy, other.performedBy)
-                && Objects.equals(performedDate, other.performedDate) && performerRole == other.performerRole
-                && Objects.equals(submission, other.submission);
+                && Objects.equals(performedDate == null ? null : performedDate.toInstant(),
+                        other.performedDate == null ? null : other.performedDate.toInstant())
+                && performerRole == other.performerRole && Objects.equals(submission, other.submission);
     }
 
     @Override

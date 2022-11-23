@@ -89,6 +89,15 @@ public class File implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public File(String id) {
+        this.id = id;
+    }
+
+    /**
      * @return the name
      */
     public String getName() {
@@ -199,6 +208,12 @@ public class File implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, fileRole, id, mimeType, name, submission, uri);
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "File [id=" + id + ", name=" + name + ", uri=" + uri + ", description=" + description + ", fileRole="
+                + fileRole + ", mimeType=" + mimeType + ", submission=" + submission + "]";
     }
 }

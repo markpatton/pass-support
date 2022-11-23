@@ -27,12 +27,13 @@ import jsonapi.ToMany;
 import jsonapi.ToOne;
 
 /**
- * Submission model. Contains details of work being submitted, where it is being deposited to, related Grants etc.
+ * Submission model. Contains details of work being submitted, where it is being
+ * deposited to, related Grants etc.
  *
  * @author Karen Hanson
  */
 
-@Resource(type="submission")
+@Resource(type = "submission")
 public class Submission implements PassEntity {
     /**
      * Unique id for the resource.
@@ -41,7 +42,8 @@ public class Submission implements PassEntity {
     private String id;
 
     /**
-     * Stringified JSON representation of metadata captured by the relevant repository forms
+     * Stringified JSON representation of metadata captured by the relevant
+     * repository forms
      */
     private String metadata;
 
@@ -51,8 +53,9 @@ public class Submission implements PassEntity {
     private Source source;
 
     /**
-     * When true, this value signals that the Submission will no longer be edited by the User.
-     * It indicates to Deposit services that it can generate Deposits for any Repositories that need one.
+     * When true, this value signals that the Submission will no longer be edited by
+     * the User. It indicates to Deposit services that it can generate Deposits for
+     * any Repositories that need one.
      */
     private Boolean submitted;
 
@@ -62,7 +65,8 @@ public class Submission implements PassEntity {
     private ZonedDateTime submittedDate;
 
     /**
-     * Status of Submission. Focused on informing User of current state of Submission.
+     * Status of Submission. Focused on informing User of current state of
+     * Submission.
      */
     private SubmissionStatus submissionStatus;
 
@@ -78,8 +82,8 @@ public class Submission implements PassEntity {
     private Publication publication;
 
     /**
-     * List of repositories that the submission will be deposited to
-     * Note that the order of the list does not carry any particular significance
+     * List of repositories that the submission will be deposited to Note that the
+     * order of the list does not carry any particular significance
      */
     @ToMany(name = "repositories")
     private List<Repository> repositories = new ArrayList<>();
@@ -91,29 +95,31 @@ public class Submission implements PassEntity {
     private User submitter;
 
     /**
-     * Name of the submitter. Used with submitterEmail as a temporary store for user information
-     * in the absence of a User record
+     * Name of the submitter. Used with submitterEmail as a temporary store for user
+     * information in the absence of a User record
      */
     private String submitterName;
 
     /**
-     * Email of the submitter as URI e.g. "mailto:j.smith@example.com". Used with submitterName
-     * as a temporary store of user information in the absence of a User record
+     * Email of the submitter as URI e.g. "mailto:j.smith@example.com". Used with
+     * submitterName as a temporary store of user information in the absence of a
+     * User record
      */
     private URI submitterEmail;
 
     /**
-     * The User(s) who prepared, or who could contribute to the preparation of, the Submission.
-     * Prepares can edit the content of the Submission (describe the Publication, add Grants, add Files,
-     * select Repositories) but cannot approve any Repository agreements or submit the Publication.
-     * Note that the order of the list does not carry any particular significance
+     * The User(s) who prepared, or who could contribute to the preparation of, the
+     * Submission. Prepares can edit the content of the Submission (describe the
+     * Publication, add Grants, add Files, select Repositories) but cannot approve
+     * any Repository agreements or submit the Publication. Note that the order of
+     * the list does not carry any particular significance
      */
     @ToMany(name = "preparers")
     private List<User> preparers = new ArrayList<>();
 
     /**
-     * List of grants associated with the submission
-     * Note that the order of the list does not carry any particular significance
+     * List of grants associated with the submission Note that the order of the list
+     * does not carry any particular significance
      */
     @ToMany(name = "grants")
     private List<Grant> grants = new ArrayList<>();
@@ -140,7 +146,8 @@ public class Submission implements PassEntity {
     }
 
     /**
-     * Copy constructor, this will copy the values of the object provided into the new object
+     * Copy constructor, this will copy the values of the object provided into the
+     * new object
      *
      * @param submission the submission to copy
      */
@@ -398,15 +405,24 @@ public class Submission implements PassEntity {
                 && Objects.equals(preparers, other.preparers) && Objects.equals(publication, other.publication)
                 && Objects.equals(repositories, other.repositories) && source == other.source
                 && submissionStatus == other.submissionStatus && Objects.equals(submitted, other.submitted)
-                && Objects.equals(submittedDate, other.submittedDate) && Objects.equals(submitter, other.submitter)
-                && Objects.equals(submitterEmail, other.submitterEmail)
+                && Objects.equals(submittedDate == null ? null : submittedDate.toInstant(),
+                        other.submittedDate == null ? null : other.submittedDate.toInstant())
+                && Objects.equals(submitter, other.submitter) && Objects.equals(submitterEmail, other.submitterEmail)
                 && Objects.equals(submitterName, other.submitterName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(aggregatedDepositStatus, effectivePolicies, grants, id, metadata, preparers, publication,
-                repositories, source, submissionStatus, submitted, submittedDate, submitter, submitterEmail,
-                submitterName);
+        return Objects.hash(id, metadata, submitterName);
+    }
+
+    @Override
+    public String toString() {
+        return "Submission [id=" + id + ", metadata=" + metadata + ", source=" + source + ", submitted=" + submitted
+                + ", submittedDate=" + submittedDate + ", submissionStatus=" + submissionStatus
+                + ", aggregatedDepositStatus=" + aggregatedDepositStatus + ", publication=" + publication
+                + ", repositories=" + repositories + ", submitter=" + submitter + ", submitterName=" + submitterName
+                + ", submitterEmail=" + submitterEmail + ", preparers=" + preparers + ", grants=" + grants
+                + ", effectivePolicies=" + effectivePolicies + "]";
     }
 }

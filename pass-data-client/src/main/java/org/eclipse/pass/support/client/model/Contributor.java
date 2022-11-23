@@ -104,6 +104,15 @@ public class Contributor implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Contributor(String id) {
+        this.id = id;
+    }
+
+    /**
      * Copy constructor, this will copy the values of the object provided into the new object
      *
      * @param contributor the contributor to copy
@@ -274,8 +283,7 @@ public class Contributor implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(affiliation, displayName, email, firstName, id, lastName, middleName, orcidId, publication,
-                roles, user);
+        return Objects.hash(id, email);
     }
 
     @Override
@@ -293,5 +301,13 @@ public class Contributor implements PassEntity {
                 && Objects.equals(middleName, other.middleName) && Objects.equals(orcidId, other.orcidId)
                 && Objects.equals(publication, other.publication) && Objects.equals(roles, other.roles)
                 && Objects.equals(user, other.user);
+    }
+
+    @Override
+    public String toString() {
+        return "Contributor [id=" + id + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName="
+                + lastName + ", displayName=" + displayName + ", email=" + email + ", orcidId=" + orcidId
+                + ", affiliation=" + affiliation + ", roles=" + roles + ", publication=" + publication + ", user="
+                + user + "]";
     }
 }

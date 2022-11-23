@@ -303,7 +303,6 @@ public class User implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(affiliation, displayName, email, firstName, id, lastName, locatorIds, middleName, orcidId,
-                roles, username);
+        return Objects.hash(id, email);
     }
 }

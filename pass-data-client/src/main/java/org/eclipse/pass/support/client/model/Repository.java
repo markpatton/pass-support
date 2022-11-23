@@ -86,6 +86,15 @@ public class Repository implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Repository(String id) {
+        this.id = id;
+    }
+
+    /**
      * Copy constructor, this will copy the values of the object provided into the new object
      *
      * @param repository the repository to copy
@@ -248,7 +257,13 @@ public class Repository implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(agreementText, description, formSchema, id, integrationType, name, repositoryKey, schemas,
-                url);
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Repository [id=" + id + ", name=" + name + ", description=" + description + ", url=" + url
+                + ", agreementText=" + agreementText + ", formSchema=" + formSchema + ", integrationType="
+                + integrationType + ", repositoryKey=" + repositoryKey + ", schemas=" + schemas + "]";
     }
 }

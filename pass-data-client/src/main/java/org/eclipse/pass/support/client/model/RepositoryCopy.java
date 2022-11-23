@@ -190,6 +190,12 @@ public class RepositoryCopy implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(accessUrl, copyStatus, externalIds, id, publication, repository);
+        return Objects.hash(id, accessUrl);
+    }
+
+    @Override
+    public String toString() {
+        return "RepositoryCopy [id=" + id + ", externalIds=" + externalIds + ", copyStatus=" + copyStatus
+                + ", accessUrl=" + accessUrl + ", publication=" + publication + ", repository=" + repository + "]";
     }
 }

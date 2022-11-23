@@ -53,6 +53,15 @@ public class Publisher implements PassEntity {
     }
 
     /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Publisher(String id) {
+        this.id = id;
+    }
+
+    /**
      * Copy constructor, this will copy the values of the object provided into the new object
      *
      * @param publisher the publisher to copy
@@ -116,6 +125,11 @@ public class Publisher implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, pmcParticipation);
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Publisher [id=" + id + ", name=" + name + ", pmcParticipation=" + pmcParticipation + "]";
     }
 }

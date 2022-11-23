@@ -174,6 +174,6 @@ public class Funder implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, localKey, name, policy, url);
+        return Objects.hash(id, localKey);
     }
 }

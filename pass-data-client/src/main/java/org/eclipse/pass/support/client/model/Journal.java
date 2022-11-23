@@ -21,6 +21,7 @@ import java.util.Objects;
 
 import jsonapi.Id;
 import jsonapi.Resource;
+import jsonapi.ToOne;
 
 /**
  * Describes a Journal and the path of it's participation in PubMedCentral
@@ -49,6 +50,7 @@ public class Journal implements PassEntity {
     /**
      * The publisher
      */
+    @ToOne(name = "publisher")
     private Publisher publisher;
 
     /**
@@ -66,6 +68,15 @@ public class Journal implements PassEntity {
      * Journal constructor
      */
     public Journal() {
+    }
+
+    /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Journal(String id) {
+        this.id = id;
     }
 
     /**
@@ -178,6 +189,12 @@ public class Journal implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, issns, journalName, nlmta, pmcParticipation, publisher);
+        return Objects.hash(id, journalName);
+    }
+
+    @Override
+    public String toString() {
+        return "Journal [id=" + id + ", journalName=" + journalName + ", issns=" + issns + ", publisher=" + publisher
+                + ", nlmta=" + nlmta + ", pmcParticipation=" + pmcParticipation + "]";
     }
 }

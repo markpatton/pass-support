@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import jsonapi.Id;
 import jsonapi.Resource;
+import jsonapi.ToMany;
 
 /**
  * Describes a Policy. Policies determine the rules that need to be followed by a Submission.
@@ -55,6 +56,7 @@ public class Policy implements PassEntity {
     /**
      * List of repositories that can satisfying this policy
      */
+    @ToMany(name = "repositories")
     private List<Repository> repositories = new ArrayList<>();
 
     /**
@@ -66,6 +68,15 @@ public class Policy implements PassEntity {
      * Policy constructor
      */
     public Policy() {
+    }
+
+    /**
+     * Constructor that sets id.
+     *
+     * @param id
+     */
+    public Policy(String id) {
+        this.id = id;
     }
 
     /**
@@ -178,6 +189,12 @@ public class Policy implements PassEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(description, id, institution, policyUrl, repositories, title);
+        return Objects.hash(id, title);
+    }
+
+    @Override
+    public String toString() {
+        return "Policy [id=" + id + ", title=" + title + ", description=" + description + ", policyUrl=" + policyUrl
+                + ", repositories=" + repositories + ", institution=" + institution + "]";
     }
 }
