@@ -27,6 +27,7 @@ import org.eclipse.pass.support.client.model.IntegrationType;
 import org.eclipse.pass.support.client.model.Journal;
 import org.eclipse.pass.support.client.model.PassEntity;
 import org.eclipse.pass.support.client.model.PerformerRole;
+import org.eclipse.pass.support.client.model.PmcParticipation;
 import org.eclipse.pass.support.client.model.Policy;
 import org.eclipse.pass.support.client.model.Publication;
 import org.eclipse.pass.support.client.model.Publisher;
@@ -323,9 +324,9 @@ public class JsonApiPassClientTest {
 
         Journal journal = new Journal();
 
-        journal.setIssns(null);
-        journal.setJournalName(null);
-        journal.setPmcParticipation(null);
+        journal.setIssns(Arrays.asList("issn1"));
+        journal.setJournalName("Ice Cream International");
+        journal.setPmcParticipation(PmcParticipation.A);
         journal.setPublisher(publisher);
 
 
