@@ -33,7 +33,7 @@ import jsonapi.ToOne;
  * @author Karen Hanson
  */
 
-@Resource(type="contributor")
+@Resource(type = "contributor")
 public class Contributor implements PassEntity {
     /**
      * Unique id for the resource.
@@ -288,12 +288,15 @@ public class Contributor implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Contributor other = (Contributor) obj;
         return Objects.equals(affiliation, other.affiliation) && Objects.equals(displayName, other.displayName)
                 && Objects.equals(email, other.email) && Objects.equals(firstName, other.firstName)

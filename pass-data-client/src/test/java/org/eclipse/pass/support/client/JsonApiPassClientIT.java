@@ -43,8 +43,20 @@ import org.eclipse.pass.support.client.model.User;
 import org.eclipse.pass.support.client.model.UserRole;
 import org.junit.jupiter.api.Test;
 
-public class JsonApiPassClientTest {
-    private final PassClient client = new JsonApiPassClient("http://localhost:8080/data");
+public class JsonApiPassClientIT {
+    private final PassClient client;
+
+    {
+        String base_url = System.getenv("pass.core.url");
+
+        if (base_url == null) {
+            System.err.println("Warning: System property pass.core.url not set");
+            base_url = "http://localhost:8080";
+        }
+
+        System.out.println("pass-core base url: " + base_url);
+        client = new JsonApiPassClient(base_url + "/data");
+    }
 
     @Test
     public void testCreateSimpleObject() throws IOException {

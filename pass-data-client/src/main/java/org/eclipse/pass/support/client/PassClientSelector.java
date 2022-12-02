@@ -21,6 +21,7 @@ import org.eclipse.pass.support.client.model.PassEntity;
  * PassClientSelector is used to select objects in the repository.
  * See https://elide.io/pages/guide/v6/10-jsonapi.html for information on the
  * sort, filter, and include syntax.
+ * A given number of matches in the total result list starting at the given offset are returned.
  */
 public class PassClientSelector<T extends PassEntity> {
     private static final int DEFAULT_LIMIT = 500;

@@ -30,7 +30,7 @@ import jsonapi.Resource;
  * @author Karen Hanson
  */
 
-@Resource(type="user")
+@Resource(type = "user")
 public class User implements PassEntity {
     /**
      * Unique id for the resource.
@@ -286,12 +286,15 @@ public class User implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         User other = (User) obj;
         return Objects.equals(affiliation, other.affiliation) && Objects.equals(displayName, other.displayName)
                 && Objects.equals(email, other.email) && Objects.equals(firstName, other.firstName)

@@ -27,7 +27,7 @@ import jsonapi.Resource;
  * @author Karen Hanson
  */
 
-@Resource(type="publisher")
+@Resource(type = "publisher")
 public class Publisher implements PassEntity {
     /**
      * Unique id for the resource.
@@ -112,12 +112,15 @@ public class Publisher implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Publisher other = (Publisher) obj;
         return Objects.equals(id, other.id) && Objects.equals(name, other.name)
                 && pmcParticipation == other.pmcParticipation;

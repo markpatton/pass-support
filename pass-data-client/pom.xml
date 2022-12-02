@@ -9,6 +9,12 @@
 
   <artifactId>pass-data-client</artifactId>
 
+  <!-- Properties for ITs -->
+  <properties>
+    <pass.core.port>8080</pass.core.port>
+    <pass.core.url>http://localhost:8080</pass.core.url>
+  </properties>
+  
   <dependencies>
     <dependency>
       <groupId>com.markomilos.jsonapi</groupId>
@@ -45,4 +51,67 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+	<groupId>io.fabric8</groupId>
+	<artifactId>docker-maven-plugin</artifactId>
+	<executions>
+          <execution>
+            <id>start</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+          </execution>
+	</executions>
+	<configuration>
+          <images>
+            <image>
+              <name>ghcr.io/eclipse-pass/pass-core-main:%v</name>
+              <run>
+                <wait>
+                  <http>
+                    <url>
+                      ${pass.core.url}/data/grant
+                    </url>
+                  </http>
+                  <time>60000</time>
+                </wait>
+		<ports>
+                  <port>${pass.core.port}:${pass.core.port}</port>
+		</ports>
+              </run>
+            </image>
+          </images>
+	</configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe-plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+	<configuration>
+          <systemPropertyVariables>
+            <pass.core.url>${pass.core.url}</pass.core.url>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

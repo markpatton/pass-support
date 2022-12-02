@@ -2,10 +2,9 @@ package org.eclipse.pass.support.client.adapter;
 
 import java.time.ZonedDateTime;
 
-import org.eclipse.pass.support.client.Util;
-
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
+import org.eclipse.pass.support.client.Util;
 
 public class ZonedDateTimeAdapter {
     @ToJson

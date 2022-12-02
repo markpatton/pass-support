@@ -29,7 +29,7 @@ import jsonapi.ToOne;
  * @author Karen Hanson
  */
 
-@Resource(type="deposit")
+@Resource(type = "deposit")
 public class Deposit implements PassEntity {
     /**
      * Unique id for the resource.
@@ -178,12 +178,15 @@ public class Deposit implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Deposit other = (Deposit) obj;
         return depositStatus == other.depositStatus && Objects.equals(depositStatusRef, other.depositStatusRef)
                 && Objects.equals(id, other.id) && Objects.equals(repository, other.repository)

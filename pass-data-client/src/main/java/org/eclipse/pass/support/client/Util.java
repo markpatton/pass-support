@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 public class Util {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
+    private Util() {}
+
     /**
      * The ZonedDateTime fields in the model must use this formatter.
      *

@@ -28,7 +28,7 @@ import jsonapi.ToOne;
  * @author Karen Hanson
  */
 
-@Resource(type="file")
+@Resource(type = "file")
 public class File implements PassEntity {
     /**
      * Unique id for the resource.
@@ -193,12 +193,15 @@ public class File implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         File other = (File) obj;
         return Objects.equals(description, other.description) && fileRole == other.fileRole
                 && Objects.equals(id, other.id) && Objects.equals(mimeType, other.mimeType)

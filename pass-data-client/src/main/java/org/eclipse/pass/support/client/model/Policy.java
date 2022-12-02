@@ -30,7 +30,7 @@ import jsonapi.ToMany;
  * @author Karen Hanson
  */
 
-@Resource(type="policy")
+@Resource(type = "policy")
 public class Policy implements PassEntity {
     /**
      * Unique id for the resource.
@@ -175,12 +175,15 @@ public class Policy implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Policy other = (Policy) obj;
         return Objects.equals(description, other.description) && Objects.equals(id, other.id)
                 && Objects.equals(institution, other.institution) && Objects.equals(policyUrl, other.policyUrl)

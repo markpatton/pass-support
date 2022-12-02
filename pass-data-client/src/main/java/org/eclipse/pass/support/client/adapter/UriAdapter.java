@@ -2,7 +2,6 @@ package org.eclipse.pass.support.client.adapter;
 
 import java.net.URI;
 
-
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
 

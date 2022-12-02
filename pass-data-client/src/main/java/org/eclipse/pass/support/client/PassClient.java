@@ -26,8 +26,7 @@ import org.eclipse.pass.support.client.model.PassEntity;
 /**
  * PassClient represents a session with the PASS repository.
  */
-interface PassClient {
-
+public interface PassClient {
     /**
      * Create a new object in the repository.
      * The id of the object must be null and will be set by the method.

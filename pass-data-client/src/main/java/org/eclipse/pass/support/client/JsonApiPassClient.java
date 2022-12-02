@@ -9,6 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonAdapter.Factory;
+import com.squareup.moshi.JsonReader;
+import com.squareup.moshi.JsonReader.Token;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import jsonapi.Document;
+import jsonapi.Document.IncludedSerialization;
+import jsonapi.JsonApiFactory;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okio.Buffer;
 import org.eclipse.pass.support.client.adapter.AggregatedDepositStatusAdapter;
 import org.eclipse.pass.support.client.adapter.AwardStatusAdapter;
 import org.eclipse.pass.support.client.adapter.ContributorRoleAdapter;
@@ -39,24 +55,9 @@ import org.eclipse.pass.support.client.model.Submission;
 import org.eclipse.pass.support.client.model.SubmissionEvent;
 import org.eclipse.pass.support.client.model.User;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.JsonAdapter.Factory;
-import com.squareup.moshi.JsonReader;
-import com.squareup.moshi.JsonReader.Token;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
-
-import jsonapi.Document;
-import jsonapi.Document.IncludedSerialization;
-import jsonapi.JsonApiFactory;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okio.Buffer;
-
+/**
+ * PassClient implementation using https://github.com/MarkoMilos/jsonapi.
+ */
 public class JsonApiPassClient implements PassClient {
     private final static String JSON_API_CONTENT_TYPE = "application/vnd.api+json";
     private final static MediaType JSON_API_MEDIA_TYPE = MediaType.parse("application/vnd.api+json; charset=utf-8");
@@ -178,7 +179,7 @@ public class JsonApiPassClient implements PassClient {
         }
     }
 
-    // Return map source object id to object relationships
+    // Return map source object id to object relationships.
     // Ignore any relationships whose target is included
     private Map<String, List<Relationship>> get_relationships(String json_api_doc) throws IOException {
         Map<String, List<Relationship>> result = new HashMap<>();
@@ -216,17 +217,17 @@ public class JsonApiPassClient implements PassClient {
                         reader.beginObject();
                         while (reader.hasNext()) {
                             switch (reader.nextName()) {
-                            case "id":
-                                id = reader.nextString();
-                                break;
+                                case "id":
+                                    id = reader.nextString();
+                                    break;
 
-                            case "type":
-                                type = reader.nextString();
-                                break;
+                                case "type":
+                                    type = reader.nextString();
+                                    break;
 
-                            default:
-                                reader.skipValue();
-                                break;
+                                default:
+                                    reader.skipValue();
+                                    break;
                             }
                         }
                         reader.endObject();
@@ -332,17 +333,17 @@ public class JsonApiPassClient implements PassClient {
 
         while (reader.hasNext()) {
             switch (reader.nextName()) {
-            case "id":
-                id = reader.nextString();
-                break;
+                case "id":
+                    id = reader.nextString();
+                    break;
 
-            case "type":
-                type = reader.nextString();
-                break;
+                case "type":
+                    type = reader.nextString();
+                    break;
 
-            default:
-                reader.skipValue();
-                break;
+                default:
+                    reader.skipValue();
+                    break;
             }
         }
 
@@ -505,13 +506,11 @@ public class JsonApiPassClient implements PassClient {
             }
         }
 
-        if (include == null || include.length == 0) {
-            Map<String, List<Relationship>> rels = get_relationships(body);
+        Map<String, List<Relationship>> rels = get_relationships(body);
 
-            matches.forEach(o -> {
-                set_relationships(o, rels.get(o.getId()));
-            });
-        }
+        matches.forEach(o -> {
+            set_relationships(o, rels.get(o.getId()));
+        });
 
         return new PassClientResult<>(matches, total);
     }

@@ -392,12 +392,15 @@ public class Submission implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Submission other = (Submission) obj;
         return aggregatedDepositStatus == other.aggregatedDepositStatus
                 && Objects.equals(effectivePolicies, other.effectivePolicies) && Objects.equals(grants, other.grants)

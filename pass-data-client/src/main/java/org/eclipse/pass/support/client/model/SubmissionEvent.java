@@ -213,12 +213,15 @@ public class SubmissionEvent implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SubmissionEvent other = (SubmissionEvent) obj;
         return Objects.equals(comment, other.comment) && eventType == other.eventType && Objects.equals(id, other.id)
                 && Objects.equals(link, other.link) && Objects.equals(performedBy, other.performedBy)

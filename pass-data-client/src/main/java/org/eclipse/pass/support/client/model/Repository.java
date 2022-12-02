@@ -29,7 +29,7 @@ import jsonapi.Resource;
  * @author Karen Hanson
  */
 
-@Resource(type="repository")
+@Resource(type = "repository")
 public class Repository implements PassEntity {
     /**
      * Unique id for the resource.
@@ -241,12 +241,15 @@ public class Repository implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Repository other = (Repository) obj;
         return Objects.equals(agreementText, other.agreementText) && Objects.equals(description, other.description)
                 && Objects.equals(formSchema, other.formSchema) && Objects.equals(id, other.id)

@@ -28,7 +28,7 @@ import jsonapi.ToOne;
  * @author Karen Hanson
  */
 
-@Resource(type="funder")
+@Resource(type = "funder")
 public class Funder implements PassEntity {
     /**
      * Unique id for the resource.
@@ -160,12 +160,15 @@ public class Funder implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Funder other = (Funder) obj;
         return Objects.equals(id, other.id) && Objects.equals(localKey, other.localKey)
                 && Objects.equals(name, other.name) && Objects.equals(policy, other.policy)

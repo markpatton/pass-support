@@ -30,7 +30,7 @@ import jsonapi.ToOne;
  * @author Karen Hanson
  */
 
-@Resource(type="repositoryCopy")
+@Resource(type = "repositoryCopy")
 public class RepositoryCopy implements PassEntity {
     /**
      * Unique id for the resource.
@@ -176,12 +176,15 @@ public class RepositoryCopy implements PassEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         RepositoryCopy other = (RepositoryCopy) obj;
         return Objects.equals(accessUrl, other.accessUrl) && copyStatus == other.copyStatus
                 && Objects.equals(externalIds, other.externalIds) && Objects.equals(id, other.id)
