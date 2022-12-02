@@ -17,10 +17,13 @@ import java.util.stream.Collectors;
 import org.eclipse.pass.support.client.model.AggregatedDepositStatus;
 import org.eclipse.pass.support.client.model.AwardStatus;
 import org.eclipse.pass.support.client.model.Contributor;
+import org.eclipse.pass.support.client.model.ContributorRole;
 import org.eclipse.pass.support.client.model.CopyStatus;
 import org.eclipse.pass.support.client.model.Deposit;
+import org.eclipse.pass.support.client.model.DepositStatus;
 import org.eclipse.pass.support.client.model.EventType;
 import org.eclipse.pass.support.client.model.File;
+import org.eclipse.pass.support.client.model.FileRole;
 import org.eclipse.pass.support.client.model.Funder;
 import org.eclipse.pass.support.client.model.Grant;
 import org.eclipse.pass.support.client.model.IntegrationType;
@@ -109,7 +112,8 @@ public class JsonApiPassClientTest {
 
         assertEquals(grant, test);
 
-        // Get the grant with one relationship, other relationship targets should just have id
+        // Get the grant with one relationship, other relationship targets should just
+        // have id
         test = client.getObject(grant, "directFunder");
 
         grant.setDirectFunder(funder);
@@ -183,21 +187,11 @@ public class JsonApiPassClientTest {
         assertIterableEquals(pubs, client.streamObjects(selector).collect(Collectors.toList()));
     }
 
-    // TODO handle relationships...
-    private void check_create_get(PassEntity obj) throws IOException {
-        client.createObject(obj);
-
-        assertNotNull(obj.getId());
-
-        PassEntity test = client.getObject(obj);
-
-        assertEquals(obj.getId(), test.getId());
-    }
-
     private static ZonedDateTime dt(String s) {
         return ZonedDateTime.parse("2010-12-10T02:01:20.300Z", Util.dateTimeFormatter());
     }
 
+    @Test
     public void testAllObjects() {
         User pi = new User();
         pi.setAffiliation(Collections.singleton("affil"));
@@ -223,6 +217,17 @@ public class JsonApiPassClientTest {
         copi.setRoles(Arrays.asList(UserRole.SUBMITTER));
         copi.setUsername("bessie1");
 
+        User preparer = new User();
+        copi.setAffiliation(Collections.singleton("dairy"));
+        copi.setDisplayName("Darren Dairy");
+        copi.setEmail("darren@example.com");
+        copi.setFirstName("Darren");
+        copi.setLastName("Dairy");
+        copi.setLocatorIds(Collections.singletonList("locator4"));
+        copi.setOrcidId("15xx-xxxx-xxxx-xxxx");
+        copi.setRoles(Arrays.asList(UserRole.SUBMITTER));
+        copi.setUsername("darren1");
+
         Repository repository = new Repository();
 
         repository.setAgreementText("I agree to everything.");
@@ -241,7 +246,6 @@ public class JsonApiPassClientTest {
         policy.setPolicyUrl(URI.create("http://example.com/policy/oa.html"));
         policy.setRepositories(Arrays.asList(repository));
         policy.setTitle("Policy title");
-
 
         Funder primary = new Funder();
 
@@ -271,6 +275,28 @@ public class JsonApiPassClientTest {
         grant.setProjectName("Moo Thru revival");
         grant.setStartDate(dt("2011-02-13T01:05:20.300Z"));
 
+        Publisher publisher = new Publisher();
+
+        publisher.setName("Publisher ");
+        publisher.setPmcParticipation(null);
+
+        Journal journal = new Journal();
+
+        journal.setIssns(Arrays.asList("issn1"));
+        journal.setJournalName("Ice Cream International");
+        journal.setPmcParticipation(PmcParticipation.A);
+        journal.setPublisher(publisher);
+
+        Publication publication = new Publication();
+
+        publication.setDoi("doi");
+        publication.setIssue("3");
+        publication.setJournal(journal);
+        publication.setPmid("pmid");
+        publication.setPublicationAbstract("Let x be...");
+        publication.setTitle("This is a huge title");
+        publication.setVolume("1 liter");
+
         Submission submission = new Submission();
         submission.setAggregatedDepositStatus(AggregatedDepositStatus.ACCEPTED);
         submission.setEffectivePolicies(Arrays.asList(policy));
@@ -295,16 +321,6 @@ public class JsonApiPassClientTest {
         event.setPerformerRole(PerformerRole.SUBMITTER);
         event.setSubmission(submission);
 
-        Publication publication = new Publication();
-
-        publication.setDoi(null);
-        publication.setIssue(null);
-        publication.setJournal(null);
-        publication.setPmid(null);
-        publication.setPublicationAbstract(null);
-        publication.setTitle(null);
-        publication.setVolume(null);
-
         RepositoryCopy rc = new RepositoryCopy();
         rc.setAccessUrl(URI.create("http://example.com/repo/item"));
         rc.setCopyStatus(CopyStatus.ACCEPTED);
@@ -312,56 +328,81 @@ public class JsonApiPassClientTest {
         rc.setPublication(publication);
         rc.setRepository(repository);
 
-        Publisher publisher = new Publisher();
-
-        publisher.setName(null);
-        publisher.setPmcParticipation(null);
-
-
-
-
-
-
-        Journal journal = new Journal();
-
-        journal.setIssns(Arrays.asList("issn1"));
-        journal.setJournalName("Ice Cream International");
-        journal.setPmcParticipation(PmcParticipation.A);
-        journal.setPublisher(publisher);
-
-
-
-
         File file = new File();
 
-        file.setDescription(null);
-        file.setFileRole(null);
-        file.setMimeType(null);
-        file.setName(null);
-        file.setSubmission(null);
-        file.setUri(null);
-
+        file.setDescription("This is a file");
+        file.setFileRole(FileRole.MANUSCRIPT);
+        file.setMimeType("application/pdf");
+        file.setName("ms.pdf");
+        file.setSubmission(submission);
+        file.setUri(URI.create("http://example.com/ms.pdf"));
 
         Deposit deposit = new Deposit();
 
-        deposit.setDepositStatus(null);
-        deposit.setRepository(null);
-        deposit.setRepositoryCopy(null);
-        deposit.setDepositStatusRef(null);
+        deposit.setDepositStatus(DepositStatus.ACCEPTED);
+        deposit.setRepository(repository);
+        deposit.setRepositoryCopy(rc);
 
         Contributor contrib = new Contributor();
 
-        contrib.setAffiliation(null);
-        contrib.setDisplayName(null);
-        contrib.setEmail(null);
-        contrib.setFirstName(null);
-        contrib.setMiddleName(null);
-        contrib.setLastName(null);
-        contrib.setOrcidId(null);
-        contrib.setPublication(null);
-        contrib.setRoles(null);
-        contrib.setUser(null);
+        contrib.setAffiliation(Collections.singleton("field"));
+        contrib.setDisplayName("Connie Contributor");
+        contrib.setEmail("connie@example.com");
+        contrib.setFirstName("Connie");
+        contrib.setMiddleName("Charlie");
+        contrib.setLastName("Contributor");
+        contrib.setOrcidId("35xx-xxxx-xxxx-xxxx");
+        contrib.setRoles(Arrays.asList(ContributorRole.CORRESPONDING_AUTHOR));
+        contrib.setUser(pi);
+        contrib.setPublication(publication);
 
+        // Check that all the objects can be created.
+        // Order such that relationship targets are created first.
+        List<PassEntity> objects = Arrays.asList(pi, copi, preparer, repository, policy, primary, direct, grant,
+                publisher, journal, publication, submission, event, rc, file, deposit, contrib);
 
+        objects.forEach(o -> {
+            try {
+                client.createObject(o);
+                assertNotNull(o.getId());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        // Check that objects can be retrieved.
+        // For equality test, relationship targets must only have id
+
+        policy.setRepositories(Arrays.asList(new Repository(repository.getId())));
+        primary.setPolicy(new Policy(policy.getId()));
+        direct.setPolicy(new Policy(policy.getId()));
+        grant.setCoPis(Arrays.asList(new User(copi.getId())));
+        grant.setPi(new User(pi.getId()));
+        grant.setDirectFunder(new Funder(direct.getId()));
+        grant.setPrimaryFunder(new Funder(primary.getId()));
+        journal.setPublisher(new Publisher(publisher.getId()));
+        publication.setJournal(new Journal(journal.getId()));
+        submission.setGrants(Arrays.asList(new Grant(grant.getId())));
+        submission.setEffectivePolicies(Arrays.asList(new Policy(policy.getId())));
+        submission.setPreparers(Arrays.asList(new User(preparer.getId())));
+        submission.setPublication(new Publication(publication.getId()));
+        submission.setSubmitter(new User(pi.getId()));
+        event.setPerformedBy(new User(pi.getId()));
+        event.setSubmission(new Submission(submission.getId()));
+        rc.setPublication(new Publication(publication.getId()));
+        rc.setRepository(new Repository(repository.getId()));
+        file.setSubmission(new Submission(submission.getId()));
+        deposit.setRepository(new Repository(repository.getId()));
+        deposit.setRepositoryCopy(new RepositoryCopy(rc.getId()));
+        contrib.setUser(new User(pi.getId()));
+        contrib.setPublication(new Publication(publication.getId()));
+
+        objects.forEach(o -> {
+            try {
+                assertEquals(o, client.getObject(o));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
