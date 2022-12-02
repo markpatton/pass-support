@@ -21,6 +21,7 @@ import java.util.Objects;
 
 import jsonapi.Id;
 import jsonapi.Resource;
+import jsonapi.ToOne;
 
 /**
  * The SubmissionEvent model captures significant events that are performed by
@@ -51,6 +52,7 @@ public class SubmissionEvent implements PassEntity {
     /**
      * The User responsible for performing the event
      */
+    @ToOne(name = "performedBy")
     private User performedBy;
 
     /**
@@ -61,6 +63,7 @@ public class SubmissionEvent implements PassEntity {
     /**
      * Associated submission.
      */
+    @ToOne(name = "submission")
     private Submission submission;
 
     /**
