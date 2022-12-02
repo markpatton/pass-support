@@ -66,8 +66,19 @@ public class JsonApiPassClient implements PassClient {
     private final OkHttpClient client;
 
     public JsonApiPassClient(String baseUrl) {
+        this(baseUrl, null, null);
+    }
+
+    public JsonApiPassClient(String baseUrl, String user, String pass) {
         this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
-        this.client = new OkHttpClient();
+
+        OkHttpClient.Builder client_builder = new OkHttpClient.Builder();
+
+        if (user != null && pass != null) {
+            client_builder.addInterceptor(new OkHttpBasicAuthInterceptor(user, pass));
+        }
+
+        client = client_builder.build();
 
         Factory factory = new JsonApiFactory.Builder().addTypes(Contributor.class, Deposit.class, File.class,
                 Funder.class, Grant.class, Journal.class, Policy.class, Publication.class, Publisher.class,
