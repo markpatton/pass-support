@@ -106,7 +106,7 @@ public class Contributor implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier
      */
     public Contributor(String id) {
         this.id = id;

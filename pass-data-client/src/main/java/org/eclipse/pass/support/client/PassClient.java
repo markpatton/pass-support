@@ -24,48 +24,74 @@ import java.util.stream.StreamSupport;
 import org.eclipse.pass.support.client.model.PassEntity;
 
 /**
- * PassClient represents a session with the PASS repository.
+ * PassClient provides CRUD operations on objects in a running PASS system.
+ * A Java representation of the PASS data model is provided.
  */
 public interface PassClient {
     /**
-     * Create a new object in the repository.
+     * Create a new PassClient.
+     *
+     * @param baseUrl base url of PASS API
+     * @return new PassClient
+     */
+    public static PassClient newInstance(String baseUrl) {
+        return new JsonApiPassClient(baseUrl);
+    }
+
+    /**
+     * Create a PassClient which uses HTTP basic auth.
+     *
+     * @param baseUrl  base url of PASS API
+     * @param user user to connect as
+     * @param pass password of user
+     * @return new PassClient
+     */
+    public static PassClient newInstance(String baseUrl, String user, String pass) {
+        return new JsonApiPassClient(baseUrl, user, pass);
+    }
+
+    /**
+     * Create a new object.
      * The id of the object must be null and will be set by the method.
      *
-     * @param <T>
-     * @param obj
-     * @throws IOException
+     * @param <T> type of the object
+     * @param obj object to persist
+     * @throws IOException if operation fails
      */
     <T extends PassEntity> void createObject(T obj) throws IOException;
 
     /**
      * Update an existing object.
      *
-     * @param <T>
-     * @param obj
-     * @throws IOException
+     * @param <T> type of the object
+     * @param obj object to update
+     * @throws IOException if operation fails
      */
     <T extends PassEntity> void updateObject(T obj) throws IOException;
 
     /**
-     * Retrieve object with the given type and id from the repository.
+     * Retrieve object with the given type and id from the repository. Targets of
+     * relationships may optionally be included in the response. If they are not included,
+     * the target object will have its identifier set, but nothing else.
      *
-     * @param <T>
-     * @param type
-     * @param id
-     * @return Persisted object or null if it does not exist
-     * @throws IOException
+     * @param <T> type of the object
+     * @param type Class of the object
+     * @param id identifier of the object
+     * @param include Array of relationship names whose targets will be included in response
+     * @return persisted object or null if it does not exist
+     * @throws IOException if operation fails
      */
     <T extends PassEntity> T getObject(Class<T> type, String id, String... include) throws IOException;
 
-
     /**
-     * Retrieve object with the type of
+     * Retrieve object with the type of and id of the argument object.
+     * This can be useful when only the type and id are known.
      *
-     * @param <T>
-     * @param obj
-     * @param include
-     * @return Persisted object or null if it does not exist
-     * @throws IOException
+     * @param <T> type of the object
+     * @param obj type and id of object to retrieve
+     * @param include relationships who
+     * @return persisted object or null if it does not exist
+     * @throws IOException if operation fails
      */
     @SuppressWarnings("unchecked")
     default <T extends PassEntity> T getObject(T obj, String... include) throws IOException {
@@ -73,21 +99,21 @@ public interface PassClient {
     }
 
     /**
-     * Delete the object in the repository with the given type and id.
+     * Delete object with the given type and id.
      *
-     * @param <T>
-     * @param type
-     * @param id
-     * @throws IOException
+     * @param <T> type of the object
+     * @param type type of the object
+     * @param id identifier of the object
+     * @throws IOException if operation fails
      */
     <T extends PassEntity> void deleteObject(Class<T> type, String id) throws IOException;
 
     /**
-     * Delete the object in the repository.
+     * Delete an object.
      *
-     * @param <T>
-     * @param obj
-     * @throws IOException
+     * @param <T> type of the object
+     * @param obj object to delete
+     * @throws IOException if operation fails
      */
     default <T extends PassEntity> void deleteObject(T obj) throws IOException {
         deleteObject(obj.getClass(), obj.getId());
@@ -96,20 +122,20 @@ public interface PassClient {
     /**
      * Select objects from the repository matching the selector.
      *
-     * @param <T>
-     * @param selector
-     * @return Matching objects
-     * @throws IOException
+     * @param <T> type of the object
+     * @param selector which objects to retrieve
+     * @return matching objects
+     * @throws IOException if operation fails
      */
     <T extends PassEntity> PassClientResult<T> selectObjects(PassClientSelector<T> selector) throws IOException;
 
     /**
      * Stream all objects in the repository matching the selector starting from the selector offset.
      *
-     * @param <T>
-     * @param selector
-     * @return Stream
-     * @throws IOException
+     * @param <T> type of the object
+     * @param selector which objects to retrieve
+     * @return Stream matching objects
+     * @throws IOException if operation fails
      */
     default <T extends PassEntity> Stream<T> streamObjects(PassClientSelector<T> selector) throws IOException {
         Spliterator<T> iter = new Spliterator<T>() {

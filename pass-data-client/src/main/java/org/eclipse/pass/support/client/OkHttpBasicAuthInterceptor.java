@@ -13,6 +13,12 @@ import okhttp3.Response;
 public class OkHttpBasicAuthInterceptor implements Interceptor {
     private final String credentials;
 
+    /**
+     * Create new Interceptor which will add the given credentials.
+     *
+     * @param user for basic auth
+     * @param password for basic auth
+     */
     public OkHttpBasicAuthInterceptor(String user, String password) {
         this.credentials = Credentials.basic(user, password);
     }

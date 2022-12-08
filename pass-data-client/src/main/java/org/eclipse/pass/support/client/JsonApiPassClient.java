@@ -66,12 +66,24 @@ public class JsonApiPassClient implements PassClient {
     private final String baseUrl;
     private final OkHttpClient client;
 
+    /**
+     * Create a JsonApiClient.
+     *
+     * @param baseUrl base url of PASS API
+     */
     public JsonApiPassClient(String baseUrl) {
         this(baseUrl, null, null);
     }
 
+    /**
+     * Create a JsonApiClient which uses HTTP basic auth.
+     *
+     * @param baseUrl  base url of PASS API
+     * @param user user to connect as
+     * @param pass password of user
+     */
     public JsonApiPassClient(String baseUrl, String user, String pass) {
-        this.baseUrl = baseUrl.endsWith("/") ? baseUrl : baseUrl + "/";
+        this.baseUrl = (baseUrl.endsWith("/") ? baseUrl : baseUrl + "/") + "data/";
 
         OkHttpClient.Builder client_builder = new OkHttpClient.Builder();
 
@@ -179,7 +191,7 @@ public class JsonApiPassClient implements PassClient {
         }
     }
 
-    // Return map source object id to object relationships.
+    // Return map of source object id to object relationships.
     // Ignore any relationships whose target is included
     private Map<String, List<Relationship>> get_relationships(String json_api_doc) throws IOException {
         Map<String, List<Relationship>> result = new HashMap<>();
@@ -246,11 +258,11 @@ public class JsonApiPassClient implements PassClient {
             reader.endObject();
         }
 
-        // Prune relationships whose target object is included
+        // Prune relationship targets that are included in the document
         if (included.size() > 0) {
             result.forEach((id, rels) -> {
                 rels.forEach(rel -> {
-                    rel.targets.removeIf(i -> included.contains(rel.target_type + "_" + i));
+                    rel.targets.removeIf(target_id -> included.contains(rel.target_type + "_" + target_id));
                 });
             });
         }
@@ -258,6 +270,7 @@ public class JsonApiPassClient implements PassClient {
         return result;
     }
 
+    // Return relationships from a data object
     private void gather_relationships_from_data(Map<String, List<Relationship>> result, JsonReader reader,
             Set<String> included) throws IOException {
         String id = null;
@@ -325,6 +338,7 @@ public class JsonApiPassClient implements PassClient {
         return result;
     }
 
+    // Parse the data of a relationship target into a Relationship
     private void fill_relationship(Relationship rel, JsonReader reader) throws IOException {
         reader.beginObject();
 
@@ -355,6 +369,7 @@ public class JsonApiPassClient implements PassClient {
         reader.endObject();
     }
 
+    // Create a PassEntity and set the id. It must have an appropriate constructor.
     private Object create_target(String target_id, String class_name) {
         try {
             return Class.forName(class_name).getConstructor(String.class).newInstance(target_id);
@@ -364,9 +379,12 @@ public class JsonApiPassClient implements PassClient {
         }
     }
 
+    // Set a value on an object using a set method.
     private void set_value(Object obj, String set_method, Object value) {
         try {
             Class<?> value_class = value.getClass();
+
+            // Handle the set method taking a List instead of a List implementation
             if (value instanceof List) {
                 value_class = List.class;
             }
@@ -378,6 +396,7 @@ public class JsonApiPassClient implements PassClient {
         }
     }
 
+    // Set a relationship on a matched object
     private void set_relationship(Object obj, Relationship rel) {
         // Targets may have been pruned
         if (rel.targets.size() == 0) {

@@ -69,6 +69,9 @@ public enum DepositStatus {
         return result;
     }
 
+    /**
+     * @return public value
+     */
     public String getValue() {
         return value;
     }

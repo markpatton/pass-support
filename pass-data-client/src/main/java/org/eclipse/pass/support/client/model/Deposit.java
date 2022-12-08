@@ -76,7 +76,7 @@ public class Deposit implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier
      */
     public Deposit(String id) {
         this.id = id;

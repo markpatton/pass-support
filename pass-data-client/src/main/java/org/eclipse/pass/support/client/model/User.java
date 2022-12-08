@@ -121,7 +121,7 @@ public class User implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public User(String id) {
         this.id = id;

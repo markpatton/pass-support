@@ -55,7 +55,7 @@ public class Publisher implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public Publisher(String id) {
         this.id = id;

@@ -80,7 +80,7 @@ public class Funder implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public Funder(String id) {
         this.id = id;

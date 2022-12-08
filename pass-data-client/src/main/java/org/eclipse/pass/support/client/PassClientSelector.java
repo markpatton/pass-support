@@ -36,7 +36,7 @@ public class PassClientSelector<T extends PassEntity> {
     /**
      * Match all objects of the given type.
      *
-     * @param type
+     * @param type of object to match
      */
     public PassClientSelector(Class<T> type) {
         this(type, 0, DEFAULT_LIMIT, null, null);
@@ -61,50 +61,86 @@ public class PassClientSelector<T extends PassEntity> {
         this.include = include;
     }
 
+    /**
+     * @return offset into list of total matches
+     */
     public int getOffset() {
         return offset;
     }
 
+    /**
+     * @param offset to set
+     */
     public void setOffset(int offset) {
         this.offset = offset;
     }
 
+    /**
+     * @return max number of matches to return
+     */
     public int getLimit() {
         return limit;
     }
 
+    /**
+     * @param limit to set
+     */
     public void setLimit(int limit) {
         this.limit = limit;
     }
 
+    /**
+     * @return type of objects to match
+     */
     public Class<? extends PassEntity> getType() {
         return type;
     }
 
+    /**
+     * @param type to set
+     */
     public void setType(Class<T> type) {
         this.type = type;
     }
 
+    /**
+     * @return how results are sorted
+     */
     public String getSorting() {
         return sorting;
     }
 
+    /**
+     * @param sorting to set
+     */
     public void setSorting(String sorting) {
         this.sorting = sorting;
     }
 
+    /**
+     * @return RSQL expression to filter matches
+     */
     public String getFilter() {
         return filter;
     }
 
+    /**
+     * @param filter to set
+     */
     public void setFilter(String filter) {
         this.filter = filter;
     }
 
+    /**
+     * @return relationship of matches whose target should be returned
+     */
     public String[] getInclude() {
         return include;
     }
 
+    /**
+     * @param include to set
+     */
     public void setInclude(String... include) {
         this.include = include;
     }

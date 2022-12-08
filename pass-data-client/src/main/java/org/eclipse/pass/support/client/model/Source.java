@@ -37,6 +37,9 @@ public enum Source {
         throw new IllegalArgumentException("Invalid performer role: " + s);
     }
 
+    /**
+     * @return public value
+     */
     public String getValue() {
         return value;
     }

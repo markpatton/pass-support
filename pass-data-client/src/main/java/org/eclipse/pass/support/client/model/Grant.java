@@ -109,7 +109,7 @@ public class Grant implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public Grant(String id) {
         this.id = id;

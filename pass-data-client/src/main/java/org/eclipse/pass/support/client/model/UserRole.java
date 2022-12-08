@@ -61,6 +61,9 @@ public enum UserRole {
         return result;
     }
 
+    /**
+     * @return public value
+     */
     public String getValue() {
         return value;
     }

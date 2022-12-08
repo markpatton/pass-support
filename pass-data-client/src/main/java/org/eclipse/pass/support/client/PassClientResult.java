@@ -20,12 +20,16 @@ import java.util.List;
 import org.eclipse.pass.support.client.model.PassEntity;
 
 /**
- * PassClientResult represents the sublist in the list of total objects which match a selector.
+ * PassClientResult represents a sublist in the list of total objects which match a selector.
  */
 public class PassClientResult<T extends PassEntity> {
     private final List<T> entities;
     private final long total;
 
+    /**
+     * @param entities matching objects
+     * @param total number of total matches
+     */
     public PassClientResult(List<T> entities, long total) {
         this.entities = entities;
         this.total = total;

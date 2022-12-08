@@ -73,7 +73,7 @@ public class Journal implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public Journal(String id) {
         this.id = id;

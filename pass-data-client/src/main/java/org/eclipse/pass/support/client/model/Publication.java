@@ -80,7 +80,7 @@ public class Publication implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public Publication(String id) {
         this.id = id;

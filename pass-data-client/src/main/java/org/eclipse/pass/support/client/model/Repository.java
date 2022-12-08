@@ -88,7 +88,7 @@ public class Repository implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public Repository(String id) {
         this.id = id;

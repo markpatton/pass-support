@@ -139,7 +139,7 @@ public class Submission implements PassEntity {
     /**
      * Constructor that sets id.
      *
-     * @param id
+     * @param id identifier to set
      */
     public Submission(String id) {
         this.id = id;

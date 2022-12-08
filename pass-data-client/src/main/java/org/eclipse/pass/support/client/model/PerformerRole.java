@@ -19,7 +19,14 @@ package org.eclipse.pass.support.client.model;
  * Roles of agents who might perform a SubmissionEvent
  */
 public enum PerformerRole {
+    /**
+     * Prepares a submission.
+     */
     PREPARER("preparer"),
+
+    /**
+     * Performs a submission
+     */
     SUBMITTER("submitter");
 
     private String value;
@@ -44,6 +51,9 @@ public enum PerformerRole {
         throw new IllegalArgumentException("Invalid performer role: " + s);
     }
 
+    /**
+     * @return public value
+     */
     public String getValue() {
         return value;
     }
